@@ -1,5 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+Assignment from here: http://www.ittc.ku.edu/~jpgs/courses/mwnets/
 - 2 nodes, with 1 interface each
 - Point-to-point link
     – data rate:  8 Mbps, transmission delay:  4 ms
