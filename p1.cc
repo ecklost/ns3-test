@@ -23,8 +23,6 @@
  * Goodput refers to data received at sink divided by simulation time.
  */
  
-using namespace ns3;
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -41,12 +39,16 @@ using namespace ns3;
 #include "ns3/event-id.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
+using namespace ns3;
+
 NS_LOG_COMPONENT_DEFINE ("P1 Information");
  
 int
 main (int argc, char *argv[])
 {
+  NS_LOG_INFO ("Begin...");
   std::string transport_prot = "TcpTahoe";
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpTahoe::GetTypeId ()));
   
   /*
    * Node List
@@ -55,6 +57,7 @@ main (int argc, char *argv[])
    * 2 : Bottleneck Exit
    * 3 : TCP Sink
    */
+   
    NS_LOG_INFO ("Node Creation");
    NodeContainer source;
    source.Create (1);
@@ -76,15 +79,15 @@ main (int argc, char *argv[])
    sinkLink.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
    sinkLink.SetChannelAttribute ("Delay", StringValue ("10ms"));
    
-   bottleneckLink.SetQueue ("DropTailQueue", 
-							"Mode", StringValue (QUEUE_MODE_PACKETS), 
+   bottleneckLink.SetQueue ("ns3::DropTailQueue", 
+							"Mode", StringValue ("QUEUE_MODE_PACKETS"), 
 							"MaxPackets", UintegerValue (64000));
-   
+
    InternetStackHelper stack;
    stack.InstallAll ();
    
-   address.SetBase ("10.0.0.0", "255.255.255.0");
    Ipv4AddressHelper address;
+   address.SetBase ("10.0.0.0", "255.255.255.0");
    
    Ipv4InterfaceContainer sinkInterface;
    
@@ -112,7 +115,7 @@ main (int argc, char *argv[])
    PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
    
    // Configure app.
-   AddressValue remoteAddress (InetSocketAddress (sinkInterface.GetAddress (0, 0), port))
+   AddressValue remoteAddress (InetSocketAddress (sinkInterface.GetAddress (0, 0), sinkPort));
    Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (512));
    BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
    ftp.SetAttribute ("Remote", remoteAddress);
