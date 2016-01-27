@@ -17,7 +17,7 @@
 /*
  * TCP Source   10ms       20ms       10ms   TCP Sink
  *          O -------- O -------- O -------- O
- *              5Mb		   1Mb        5Mb
+ *              5Mb	   1Mb        5Mb
  *
  * The middlemost portion is a bottleneck link.
  * Goodput refers to data received at sink divided by simulation time.
