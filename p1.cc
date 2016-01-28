@@ -41,12 +41,12 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("P1 Information");
+//NS_LOG_COMPONENT_DEFINE ("P1 Information");
  
 int
 main (int argc, char *argv[])
 {
-  NS_LOG_INFO ("Begin...");
+  //NS_LOG_INFO ("Begin...");
   std::string transport_prot = "TcpTahoe";
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpTahoe::GetTypeId ()));
   
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
    * 3 : TCP Sink
    */
    
-   NS_LOG_INFO ("Node Creation");
+   //NS_LOG_INFO ("Node Creation");
    NodeContainer source;
    source.Create (1);
    NodeContainer bottleneck;
@@ -66,7 +66,7 @@ main (int argc, char *argv[])
    NodeContainer sink;
    sink.Create (1);
    
-   NS_LOG_INFO ("Point-to-point Creation");
+   //NS_LOG_INFO ("Point-to-point Creation");
    PointToPointHelper sourceLink;
    sourceLink.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
    sourceLink.SetChannelAttribute ("Delay", StringValue ("10ms"));
@@ -91,7 +91,7 @@ main (int argc, char *argv[])
    
    Ipv4InterfaceContainer sinkInterface;
    
-   NS_LOG_INFO ("Connecting nodes...");
+   //NS_LOG_INFO ("Connecting nodes...");
    NetDeviceContainer devices;
    
    devices = sourceLink.Install (source.Get (0), bottleneck.Get (0));
