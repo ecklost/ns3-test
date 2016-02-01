@@ -106,7 +106,7 @@ main (int argc, char *argv[])
    address.NewNetwork ();
    interfaces = address.Assign (devices);
    
-   sinkInterface.Add (interfaces.Get (2));
+   sinkInterface.Add (interfaces.Get (1));
    
    Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
    
