@@ -23,8 +23,6 @@
  * Goodput refers to data received at sink divided by simulation time.
  */
  
-using namespace ns3;
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -40,6 +38,8 @@ using namespace ns3;
 #include "ns3/enum.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv4-global-routing-helper.h"
+
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("P1 Information");
  
@@ -76,8 +76,8 @@ main (int argc, char *argv[])
   sinkLink.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   sinkLink.SetChannelAttribute ("Delay", StringValue ("10ms"));
    
-  bottleneckLink.SetQueue ("DropTailQueue", 
-						   "Mode", StringValue (QUEUE_MODE_PACKETS), 
+  bottleneckLink.SetQueue ("ns3::DropTailQueue", 
+						   "Mode", StringValue ("QUEUE_MODE_PACKETS"), 
 						   "MaxPackets", UintegerValue (2000));
    
   InternetStackHelper stack;
@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
    
    // Configure app.
-  AddressValue remoteAddress (InetSocketAddress (sinkInterface.GetAddress (0, 0), port))
+  AddressValue remoteAddress (InetSocketAddress (sinkInterface.GetAddress (0, 0), sinkPort));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (128));
   BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
   ftp.SetAttribute ("Remote", remoteAddress);
