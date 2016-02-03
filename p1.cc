@@ -125,6 +125,10 @@ main (int argc, char *argv[])
   ApplicationContainer sinkApp = sinkHelper.Install (sink);
   sinkApp.Start (Seconds (0));
   sinkApp.Stop  (Seconds (0.2));
+  
+  sourceLink.EnablePcapAll ("p1", true);
+  bottleneckLink.EnablePcapAll ("p1", true);
+  sinkLink.EnablePcapAll ("p1", true);
    
   Simulator::Run ();
   Simulator::Destroy ();
