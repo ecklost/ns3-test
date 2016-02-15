@@ -49,42 +49,61 @@ int main (int argc, char *argv[]) {
 			   "Ssid", SsidValue (ssid),
 			   "ActiveProbing", BooleanValue (false));
 			   
-  NetDeviceContainer satellite;
-  satellite = wifi.Install (phy, mac, SAT.Get (0));
+				 
+  NetDeviceContainer jet;
+  jet = wifi.Install (phy, mac, A10.Get (0));
   mac.SetType ("ns3::ApWifiMac",
 			   "Ssid", SsidValue (ssid));
+	
+  NetDeviceContainer satellite;
+  satellite = wifi.Install (phy, mac, SAT.Get (0));
+
   NetDeviceContainer gSatellite;
   gSatellite = wifi.Install (phy, mac, SAT.Get (1));
   MobilityHelper mobility;
-  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-								 "MinX", DoubleValue (0.0),
-								 "MinY", DoubleValue (0.0),
-								 "DeltaX", DoubleValue (5.0),
-								 "DeltaY", DoubleValue (10.0),
-								 "GridWidth", UintegerValue (3),
-								 "LayoutType", StringValue ("RowFirst"));
 	
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+				 "MinX", DoubleValue (0.0),
+				 "MinY", DoubleValue (0.0),
+				 "DeltaX", DoubleValue (5.0),
+				 "DeltaY", DoubleValue (10.0),
+				 "GridWidth", UintegerValue (3),
+				 "LayoutType", StringValue ("RowFirst"));
+
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-							 "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+			     "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+  mobility.Install (A10.Get (0));								 
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (SAT.Get (0));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (SAT.Get (1));
+	
   InternetStackHelper stack;
-  stack.Install (A10);
+  /*stack.Install (A10);
   stack.Install (SAT);
-  stack.Install (WPAFB);
-  
+  stack.Install (WPAFB);*/
+  stack.InstallAll ();
+
+	// Here there be dragons.
   Ipv4AddressHelper address; 
+  address.SetBase ("10.0.0.0", "255.255.255.0");  
   
-  address.SetBase ("10.1.1.0", "255.255.255.0");  
-  Ipv4InterfaceContainer interfaces;
-  interfaces = address.Assign (A10);
-  address.SetBase ("10.1.2.0", "255.255.255.0");
+  Ipv4InterfaceContainer baseInterfaces;
+	
+  NetDeviceContainer devices;
+	 
+  address.NewNetwork ();
+  Ipv4InterfaceContainer interfaces = address.Assign (jet);
+	
   address.Assign (satellite);
   address.Assign (gSatellite);
-  address.SetBase ("10.1.3.0", "255.255.255.0");
-  interfaces = address.Assign (WPAFB);
+	
+  devices = groundLink.Install (SAT.Get (1), WPAFB.Get (0));
+  address.NewNetwork ();
+  interfaces = address.Assign (devices);
   
+  baseInterfaces.Add (interfaces.Get (1));
+	
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (WPAFB.Get (0));
   serverApps.Start (Seconds (1.0));
@@ -101,6 +120,12 @@ int main (int argc, char *argv[]) {
   
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop (Seconds (10.0));
+	
+  phy.EnablePcap ("proj-2", jet.Get (0));
+  phy.EnablePcap ("proj-2", satellite.Get(0));
+  phy.EnablePcap ("proj-2", gSatellite.Get(0));
+  groundLink.EnablePcapAll ("proj-2", true);
+	
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;
