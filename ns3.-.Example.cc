@@ -22,6 +22,8 @@
 #include "ns3/event-id.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
+using namespace ns3;
+
 int main (int argc, char *argv[])
 {
 	NodeContainer satellites;
@@ -53,7 +55,7 @@ int main (int argc, char *argv[])
 	Ipv4InterfaceContainer moreInterfaces = address.Assign (devices);
 	
 	devices = geoToGnd.Install (satellites.Get (1), ground.Get (0));
-	device.Get (1)->SetAttribute ("ReceiverErrorModel", PointerValue (em));
+	device.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 	address.NewNetwork ();
 	moreInterfaces = address.Assign (devices);
 	
@@ -65,7 +67,7 @@ int main (int argc, char *argv[])
 	PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
 	
 	AddressValue remoteAddress (InetSocketAddress (interface.GetAddress (0,0), groundSink));
-	Config::SetDefault ("ns3::TcpSocketFactory::SegmentSize", UintegerValue (128));
+	Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (128));
 	BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
 	ftp.SetAttribute ("Remote", remoteAddress);
 	ftp.SetAttribute ("SendSize", UintegerValue (128));
