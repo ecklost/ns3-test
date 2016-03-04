@@ -36,17 +36,24 @@ int main (int argc, char *argv[])
 	geoToGnd.SetDeviceAttribute ("DataRate", StringValue ("20Mbps"));
 	geoToGnd.SetChannelAttribute ("Delay", StringValue ("125ms"));
 	
+	NetDeviceContainer devices;
+	devices = leoToGeo.Install (satellites.Get (0), satellites.Get (1));
+	
+	Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+	em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
+	devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
+	
 	InternetStackHelper stack;
 	stack.InstallAll ();
 	Ipv4AddressHelper address;
 	address.SetBase ("10.0.0.0", "255.255.255.0");
 	Ipv4InterfaceContainer interface;
-	NetDeviceContainer devices;
-	
-	devices = leoToGeo.Install (satellites.Get (0), satellites.Get (1));
+
 	address.NewNetwork ();
 	Ipv4InterfaceContainer moreInterfaces = address.Assign (devices);
+	
 	devices = geoToGnd.Install (satellites.Get (1), ground.Get (0));
+	device.Get (1)->SetAttribute ("ReceiverErrorModel", PointerValue (em));
 	address.NewNetwork ();
 	moreInterfaces = address.Assign (devices);
 	
